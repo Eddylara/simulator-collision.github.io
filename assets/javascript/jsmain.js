@@ -3,6 +3,43 @@ let botonni = document.querySelector(".reproduccion");
 let ctx = canvas.getContext("2d");
 let e = 1;
 
+let tiempoInicio;
+let tiempo = [];
+let valores = [];
+let valores2 = [];
+let grabacionActiva = false;
+let intervalo;
+
+function iniciarGrabacion() {
+  tiempo = [];
+  valores = [];
+  valores2 = [];
+
+  tiempoInicio = new Date().getTime();
+  grabacionActiva = true;
+  intervalo = setInterval(registrarValor, 500);
+}
+
+function registrarValor() {
+  if (grabacionActiva) {
+    const tiempoActual = new Date().getTime();
+    const tiempoTranscurrido = tiempoActual - tiempoInicio;
+    const valorActual = parseFloat($btnMoment1.value);
+    const valorActual2 = parseFloat($btnMoment2.value);
+    tiempo.push(tiempoTranscurrido);
+    valores.push(valorActual);
+    valores2.push(valorActual2);
+  }
+}
+
+function pausarGrabacion() {
+  grabacionActiva = false;
+  clearInterval(intervalo);
+  tiempo = tiempo.map((e) => e / 1000);
+  valores = valores.map((e) => parseFloat(e.toFixed(2)));
+  valores2 = valores2.map((e) => parseFloat(e.toFixed(2)));
+}
+
 // Obtener botones de introduccion
 const $btnall = document.querySelectorAll(".inputVal");
 
@@ -291,6 +328,7 @@ const pintarStage = function () {
   });
 };
 const play = function () {
+  iniciarGrabacion();
   botonni.classList.remove("fa-play");
   botonni.classList.add("fa-stop");
   bolitas.forEach((e) => {
@@ -298,6 +336,12 @@ const play = function () {
   });
 };
 const stop = function () {
+  if (grabacionActiva) {
+    pausarGrabacion();
+  }
+  console.log(tiempo);
+  console.log(valores);
+  console.log(valores2);
   botonni.classList.contains("fa-play");
   botonni.classList.remove("fa-stop");
   botonni.classList.add("fa-play");
