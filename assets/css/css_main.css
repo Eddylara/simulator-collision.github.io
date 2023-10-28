@@ -9,6 +9,17 @@
 .head {
   margin-bottom: 10px;
 }
+.tabletitle1 {
+  background: #103ad4;
+  color: #fff;
+}
+.tabletitle2 {
+  background: green;
+  color: #fff;
+}
+.mediumtitle {
+  background: #ebeaea;
+}
 /* #103cd4 Solo a ti te queda bien
   #85c1e9 nadie te ve como te puedo ver*/
 body {
@@ -130,12 +141,15 @@ tr {
   background: rgba(0, 0, 0, 0.562);
   display: grid;
   place-content: center;
-  transform: translate(100000px, 0px);
+
+  transform: translate(5000px, 0px);
+  transition: transform 600ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
 }
 .container-canvas {
   width: 1000px;
   height: 500px;
   background: #fff;
+  padding: 2rem;
   position: relative;
 }
 .closebottom {
@@ -179,4 +193,7 @@ tr {
 
 .disabled:hover {
   background-color: #7d7d7d;
+}
+.activemodal {
+  transform: translate(0px, 0px);
 }

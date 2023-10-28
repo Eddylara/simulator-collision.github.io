@@ -2,13 +2,15 @@ let canvas = document.querySelector("#simu");
 let botonni = document.querySelector(".reproduccion");
 let ctx = canvas.getContext("2d");
 let e = 1;
-
+const botonVisualizar = document.querySelector(".vermodalboton");
 let tiempoInicio;
 let tiempo = [];
 let valores = [];
 let valores2 = [];
 let grabacionActiva = false;
 let intervalo;
+
+const ctx2 = document.getElementById("graph");
 
 function iniciarGrabacion() {
   tiempo = [];
@@ -35,13 +37,14 @@ function registrarValor() {
 function pausarGrabacion() {
   grabacionActiva = false;
   clearInterval(intervalo);
-  tiempo = tiempo.map((e) => e / 1000);
+  tiempo = tiempo.map((e) => parseFloat((e / 1000).toFixed(2)));
   valores = valores.map((e) => parseFloat(e.toFixed(2)));
   valores2 = valores2.map((e) => parseFloat(e.toFixed(2)));
 }
 
 // Obtener botones de introduccion
 const $btnall = document.querySelectorAll(".inputVal");
+const $modal = document.querySelector(".modal");
 
 const $btn1Masa = document.querySelector(".masa-1"),
   $btn2Masa = document.querySelector(".masa-2"),
@@ -67,6 +70,59 @@ const $viewEnergia = document.getElementById("viewE"),
   $momentoSistema = document.querySelector(".momentoSis"),
   $energiaSistema = document.querySelector(".energiaSis"),
   $rangoVisor = document.querySelector(".rangoEvisor");
+
+const arch = {
+  type: "line",
+  data: {
+    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    datasets: [
+      {
+        label: "Cuerpo 1",
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 2,
+        backgroundColor: "rgba(16, 58, 212, 0.3)",
+        borderColor: "#103ad4",
+        pointRadius: 0, // Configurado en cero para eliminar los puntos
+      },
+      {
+        label: "Cuerpo 2",
+        data: [5, 4, 5, 2, 1],
+        borderWidth: 2,
+        backgroundColor: "rgba(0, 128, 0, 0.3)",
+        borderColor: "green",
+        pointRadius: 0, // Configurado en cero para eliminar los puntos
+      },
+    ],
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Momento Lineal [Kgm/s]",
+          fontSize: 14,
+        },
+      },
+      x: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Segundos [s]",
+          fontSize: 14,
+        },
+      },
+    },
+    legend: {
+      display: true,
+      labels: {
+        fontSize: 12,
+      },
+    },
+  },
+};
+
+const carita = new Chart(ctx2, arch);
 
 class particula {
   constructor(rad, x, y, velox, veloy, color, masa) {
@@ -336,8 +392,15 @@ const play = function () {
   });
 };
 const stop = function () {
+  if (valores.length > 0) {
+    botonVisualizar.classList.remove("disabled");
+  }
   if (grabacionActiva) {
     pausarGrabacion();
+    carita.data.labels = tiempo;
+    carita.data.datasets[0].data = valores;
+    carita.data.datasets[1].data = valores2;
+    carita.update();
   }
   console.log(tiempo);
   console.log(valores);
@@ -363,10 +426,30 @@ const borrarVectores = function () {
 document.addEventListener("click", (e) => {
   if (e.target.matches(".reproduccion") || e.target.matches(".cont-repro")) {
     if (botonni.classList.contains("fa-play")) {
+      botonVisualizar.classList.add("disabled");
       play();
     } else {
       stop();
     }
+  }
+
+  if (
+    e.target === botonVisualizar &&
+    !botonVisualizar.classList.contains("disabled")
+  ) {
+    $modal.classList.add("activemodal");
+  }
+
+  if (e.target.matches(".closebottom")) {
+    $modal.classList.remove("activemodal");
+  }
+
+  if (
+    e.target !== botonVisualizar &&
+    !e.target.matches("#graph") &&
+    !e.target.matches(".container-canvas")
+  ) {
+    $modal.classList.remove("activemodal");
   }
 });
 

@@ -85,10 +85,10 @@
         </div>
         <table class="tablaValores">
             <tr>
-                <td colspan="7">Cuerpo 1</td>
-                <td colspan="7">Cuerpo 2</td>
+                <td colspan="7" class="tabletitle1">Cuerpo 1</td>
+                <td colspan="7" class="tabletitle2">Cuerpo 2</td>
             </tr>
-            <tr>
+            <tr class="mediumtitle">
                 <td>M [kg]</td>
                 <td>Pos x</td>
                 <td>Pos y</td>
@@ -125,7 +125,7 @@
 
         <div class="modal">
             <div class="container-canvas">
-                <canvas width="1200" height="720"></canvas>
+                <canvas id="graph" width="1000" height="500"></canvas>
                 <div class="closebottom">
                     X
                 </div>
@@ -133,6 +133,7 @@
 
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="assets/javascript/jsmain.js"></script>
 </body>
 
