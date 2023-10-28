@@ -123,3 +123,60 @@ tr {
 .disablebb {
   opacity: 0;
 }
+.modal {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.562);
+  display: grid;
+  place-content: center;
+  transform: translate(100000px, 0px);
+}
+.container-canvas {
+  width: 1000px;
+  height: 500px;
+  background: #fff;
+  position: relative;
+}
+.closebottom {
+  background: red;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  transform: translate(50%, -50%);
+  cursor: pointer;
+  user-select: none;
+}
+.vermodalboton {
+  background-color: #103dc4;
+  color: white;
+  border: none;
+  border-radius: 1px;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px 2px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.vermodalboton:hover {
+  background-color: #3454b4;
+}
+
+.disabled {
+  background-color: #7d7d7d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.disabled:hover {
+  background-color: #7d7d7d;
+}
