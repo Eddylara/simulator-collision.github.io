@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/img/favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/img/favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/img/favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/img/favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/img/favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/img/favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/img/favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/img/favicons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Simulador de Colisiones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Sofia+Sans:wght@500&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/e186f730ef.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/css_main.css">
+</head>
+
+<body>
+    <div class="principal">
+
+        <div class="head">
+            <img src="assets/img/utb-logotipo.png" alt="Logo" class="logo">
+            <h1>
+                Universidad Tecnologica de Bolívar
+            </h1>
+        </div>
+        <div class="data">
+            <span class="momentoSis disablebb">P = 55 Kg·m/s</span><br>
+            <span class="energiaSis disablebb">E = 0.5 J</span>
+        </div>
+        <div class="stage">
+            <div class="screen">
+                <canvas id="simu" width="770" height="400">
+
+                </canvas>
+            </div>
+            <div class="cont-controller">
+
+                <div class="controller">
+                    <label>
+                        <input type="checkbox" id="viewE"> Energia Cinetica
+                    </label>
+                    <label>
+                        <input type="checkbox" id="viewMoment"> Momento lineal
+                    </label>
+                    <label>
+                        <input type="checkbox" checked id="viewVectores"> Visualizar Vectores
+                    </label>
+                    <label>
+                        Elasticidad: <span class="rangoEvisor">100%</span>
+                        <div>
+                            <input type="range" min="20" max="100" value="100" step="10" id="rangeE">
+                        </div>
+                    </label>
+
+
+
+                    <div class="cont-repro">
+
+                        <i class="fa-solid fa-play reproduccion"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="tablaValores">
+            <tr>
+                <td colspan="7">Cuerpo 1</td>
+                <td colspan="7">Cuerpo 2</td>
+            </tr>
+            <tr>
+                <td>M [kg]</td>
+                <td>Pos x</td>
+                <td>Pos y</td>
+                <td>Velo x [m/s]</td>
+                <td>Velo y [m/s]</td>
+                <td>|V| [m/s]</td>
+                <td>|P| [kgm/s]</td>
+                <td>M [kg]</td>
+                <td>Pos x</td>
+                <td>Pos y</td>
+                <td>Velo x [m/s]</td>
+                <td>Velo y [m/s]</td>
+                <td>|V| [m/s]</td>
+                <td>|P| [kgm/s]</td>
+            </tr>
+            <tr>
+                <td><input min="0.1" step="0.1" max="1.2" type="number" class="inputVal masa masa-1"></td>
+                <td><input readonly type="number" class="inputVal posx posx-1"></td>
+                <td><input readonly type="number" class="inputVal posy posy-1"></td>
+                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal velox velox-1"></td>
+                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal veloy veloy-1"></td>
+                <td><input readonly type="number" class="inputVal velo velo-1"></td>
+                <td><input readonly type="number" class="inputVal moment moment-1"></td>
+
+                <td><input min="0.1" step="0.1" max="1.2" type="number" class="inputVal masa masa-2"></td>
+                <td><input readonly type="number" class="inputVal posx posx-2"></td>
+                <td><input readonly type="number" class="inputVal posy posy-2"></td>
+                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal velox velox-2"></td>
+                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal veloy veloy-2"></td>
+                <td><input readonly type="number" class="inputVal velo velo-2"></td>
+                <td><input readonly type="number" class="inputVal moment moment-2"></td>
+            </tr>
+        </table>
+    </div>
+    <script src="assets/javascript/jsmain.js"></script>
+</body>
+
+
+</html>
