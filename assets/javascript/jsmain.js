@@ -154,7 +154,6 @@ class particula {
   detener() {
     this.move = false;
   }
-
   dibujarVector() {
     this.vector.dibujar = true;
   }
@@ -366,9 +365,9 @@ const animate = () => {
   $energiaSistema.textContent = "E = " + EnergiaTotal;
   if (botonni.classList.contains("fa-stop")) {
     $btn1Velox.value = ((circuloRojo.vector.velox * 4) / 10).toFixed(1);
-    $btn1Veloy.value = ((circuloRojo.vector.veloy * 4) / 10).toFixed(1);
+    $btn1Veloy.value = ((circuloRojo.vector.veloy * -4) / 10).toFixed(1);
     $btn2Velox.value = ((mideo.vector.velox * 4) / 10).toFixed(1);
-    $btn2Veloy.value = ((mideo.vector.veloy * 4) / 10).toFixed(1);
+    $btn2Veloy.value = ((mideo.vector.veloy * -4) / 10).toFixed(1);
   }
   requestAnimationFrame(animate);
 };
