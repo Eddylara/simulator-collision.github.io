@@ -332,19 +332,21 @@ const animate = () => {
   $btnPos2x.value = Math.round(mideo.x - 375);
   $btnPos2y.value = Math.round(mideo.y - 200);
 
-  $btnMoment1.value =
+  $btnMoment1.value = (
     Math.sqrt(
       $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
     ).toFixed(1) *
-    (circuloRojo.masa / 1000);
-  $btnMoment2.value =
+    (circuloRojo.masa / 1000)
+  ).toFixed(2);
+  $btnMoment2.value = (
     Math.sqrt(
       $btn2Velox.value * $btn2Velox.value + $btn2Veloy.value * $btn2Veloy.value
     ).toFixed(1) *
-    (mideo.masa / 1000);
+    (mideo.masa / 1000)
+  ).toFixed(2);
   const MomentoTotal =
     parseFloat($btnMoment1.value) + parseFloat($btnMoment2.value);
-  $momentoSistema.textContent = "P = " + MomentoTotal;
+  $momentoSistema.textContent = "P = " + MomentoTotal.toFixed(2);
   $btnVelo1.value = Math.sqrt(
     $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
   ).toFixed(1);
@@ -375,7 +377,7 @@ const toMasa = (pixeles) => Math.round((1100 / 15) * pixeles - 26000 / 15);
 const toPixel = (masa) => Math.round((15 / 1100) * masa + 260 / 11);
 
 const circuloRojo = new particula(toPixel(100), 100, 200, 5, 0, "#103cd4", 100);
-const mideo = new particula(toPixel(500), 375, 120, -3, 3, "green", 500);
+const mideo = new particula(toPixel(100), 375, 120, -3, 3, "green", 500);
 bolitas.push(circuloRojo, mideo);
 const pintarStage = function () {
   bolitas.forEach((e) => {
@@ -519,7 +521,7 @@ $btn1Veloy.value = Math.round((circuloRojo.vector.veloy * 4) / 10);
 $btn2Velox.value = Math.round((mideo.vector.velox * 4) / 10);
 $btn2Veloy.value = Math.round((mideo.vector.veloy * 4) / 10);
 $btn1Masa.value = 0.1;
-$btn2Masa.value = 0.5;
+$btn2Masa.value = 0.1;
 $btnMoment1.value =
   (Math.sqrt(
     $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
