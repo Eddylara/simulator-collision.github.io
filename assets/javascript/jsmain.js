@@ -1,8 +1,13 @@
-let canvas = document.querySelector("#simu");
-let botonni = document.querySelector(".reproduccion");
-let ctx = canvas.getContext("2d");
-let e = 1;
-const botonVisualizar = document.querySelector(".vermodalboton");
+let canvas = document.querySelector("#simu"); // Obtengo el lienzo para el simulador
+
+let boton_reproduccion = document.querySelector(".reproduccion"); // Obtengo boton de reproduccion
+
+let ctx = canvas.getContext("2d"); // Contexto para pintar en el canvas
+
+let e = 1; // inn
+
+const btn_graficas = document.querySelector(".vermodalboton"); // Boton que muestra las graficas
+
 let tiempoInicio;
 let tiempo = [];
 let valores = [];
@@ -10,7 +15,12 @@ let valores2 = [];
 let grabacionActiva = false;
 let intervalo;
 
-const ctx2 = document.getElementById("graph");
+const ctx2 = document.getElementById("graph"); // Contexto 2 para la grafica
+
+const toPixel = (masa) => {
+  const pixelValue = Math.round((15 / 1100) * masa + 240 / 11);
+  return Math.round(pixelValue / 5) * 5; // Redondear al múltiplo de 5 más cercano
+};
 
 function iniciarGrabacion() {
   tiempo = [];
@@ -43,10 +53,9 @@ function pausarGrabacion() {
 }
 
 // Obtener botones de introduccion
-const $btnall = document.querySelectorAll(".inputVal");
-const $modal = document.querySelector(".modal");
-
-const $btn1Masa = document.querySelector(".masa-1"),
+const $btnall = document.querySelectorAll(".inputVal"),
+  $modal = document.querySelector(".modal"),
+  $btn1Masa = document.querySelector(".masa-1"),
   $btn2Masa = document.querySelector(".masa-2"),
   $btn1Velox = document.querySelector(".velox-1"),
   $btn2Velox = document.querySelector(".velox-2"),
@@ -71,6 +80,7 @@ const $viewEnergia = document.getElementById("viewE"),
   $energiaSistema = document.querySelector(".energiaSis"),
   $rangoVisor = document.querySelector(".rangoEvisor");
 
+// Objeto para las graficas
 const arch = {
   type: "line",
   data: {
@@ -122,8 +132,9 @@ const arch = {
   },
 };
 
-const carita = new Chart(ctx2, arch);
+const grafico = new Chart(ctx2, arch);
 
+// Clase de la partircula
 class particula {
   constructor(rad, x, y, velox, veloy, color, masa) {
     this.mostrar = false;
@@ -161,273 +172,331 @@ class particula {
     this.vector.dibujar = false;
   }
 }
-const bolitas = [];
 
-const animate = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (bolitas.length !== 0) {
-    bolitas.forEach((elem) => {
-      if (elem.x + elem.rad >= canvas.width) {
-        if (botonni.classList.contains("fa-stop")) {
-          elem.vector.velox = -1 * elem.vector.velox;
-        }
-        elem.x = canvas.width - elem.rad; // Asegura que la partícula esté dentro del canvas
-      }
-      if (elem.y + elem.rad >= canvas.height) {
-        if (botonni.classList.contains("fa-stop")) {
-          elem.vector.veloy = -1 * elem.vector.veloy;
-        }
-        elem.y = canvas.height - elem.rad; // Asegura que la partícula esté dentro del canvas
-      }
-      if (elem.x - elem.rad <= 0) {
-        if (botonni.classList.contains("fa-stop")) {
-          elem.vector.velox = -1 * elem.vector.velox;
-        }
-        elem.x = elem.rad; // Asegura que la partícula esté dentro del canvas
-      }
-      if (elem.y - elem.rad <= 0) {
-        if (botonni.classList.contains("fa-stop")) {
-          elem.vector.veloy = -1 * elem.vector.veloy;
-        }
-        elem.y = elem.rad; // Asegura que la partícula esté dentro del canvas
-      }
+// Array de particulas
+const arr_particulas = [];
 
-      if (!elem.move && !elem.vector.dibujar && elem.mostrar) {
-        ctx.beginPath();
-        ctx.fillStyle = elem.color;
-        ctx.arc(elem.x, elem.y, elem.rad, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      if (!elem.move && elem.vector.dibujar && elem.mostrar) {
-        ctx.beginPath();
-        ctx.fillStyle = elem.color;
-        ctx.arc(elem.x, elem.y, elem.rad, 0, 2 * Math.PI);
-        ctx.fill();
+const part_1 = new particula(toPixel(100), 100, 200, 5, 0, "#103cd4", 100);
+const part_2 = new particula(toPixel(100), 375, 120, -3, -3, "green", 100);
 
-        ctx.beginPath();
-        ctx.fillStyle = elem.color;
-        ctx.moveTo(elem.x, elem.y);
-        ctx.lineTo(
-          elem.x + elem.vector.velox * 24,
-          elem.y + elem.vector.veloy * 24
-        );
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        if (elem.vector.velox !== 0 || elem.vector.veloy !== 0) {
-          // Calcular las coordenadas de la punta de la flecha
-          var arrowX = elem.x + elem.vector.velox * 25;
-          var arrowY = elem.y + elem.vector.veloy * 25;
-
-          // Dibujar la punta de la flecha
-          ctx.save();
-          ctx.translate(arrowX, arrowY);
-          ctx.rotate(Math.atan2(elem.vector.veloy, elem.vector.velox));
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(-18, -9); // Primer extremo de la flecha
-          ctx.lineTo(-18, 9); // Segundo extremo de la flecha
-          ctx.closePath();
-          ctx.strokeStyle = "black"; // Color del borde
-          ctx.lineWidth = 1; // Ancho del borde
-          ctx.stroke(); // Dibujar el borde
-
-          ctx.fillStyle = elem.color;
-          ctx.fill(); // Llenar la flecha
-          ctx.restore();
-        }
-      }
-
-      if (elem.move && elem.vector.dibujar && elem.mostrar) {
-        elem.x += elem.vector.velox;
-        elem.y += elem.vector.veloy;
-        ctx.beginPath();
-        ctx.fillStyle = elem.color;
-        ctx.arc(elem.x, elem.y, elem.rad, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.fillStyle = elem.color;
-        ctx.moveTo(elem.x, elem.y);
-        ctx.lineTo(
-          elem.x + elem.vector.velox * 24,
-          elem.y + elem.vector.veloy * 24
-        );
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        if (elem.vector.velox !== 0 || elem.vector.veloy !== 0) {
-          // Calcular las coordenadas de la punta de la flecha
-          var arrowX = elem.x + elem.vector.velox * 25;
-          var arrowY = elem.y + elem.vector.veloy * 25;
-
-          // Dibujar la punta de la flecha
-          ctx.save();
-          ctx.translate(arrowX, arrowY);
-          ctx.rotate(Math.atan2(elem.vector.veloy, elem.vector.velox));
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(-18, -9); // Primer extremo de la flecha
-          ctx.lineTo(-18, 9); // Segundo extremo de la flecha
-          ctx.closePath();
-          ctx.strokeStyle = "black"; // Color del borde
-          ctx.lineWidth = 1; // Ancho del borde
-          ctx.stroke(); // Dibujar el borde
-
-          ctx.fillStyle = elem.color;
-          ctx.fill(); // Llenar la flecha
-          ctx.restore();
-        }
-      }
-      if (elem.move && !elem.vector.dibujar && elem.mostrar) {
-        elem.x += elem.vector.velox;
-        elem.y += elem.vector.veloy;
-        ctx.beginPath();
-        ctx.fillStyle = elem.color;
-        ctx.arc(elem.x, elem.y, elem.rad, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      bolitas.forEach((otraBolita) => {
-        if (elem !== otraBolita && detectarColision(elem, otraBolita)) {
-          const dx = otraBolita.x - elem.x;
-          const dy = otraBolita.y - elem.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          const nx = dx / distance;
-          const ny = dy / distance;
-
-          const v1n = elem.vector.velox * nx + elem.vector.veloy * ny;
-          const v2n =
-            otraBolita.vector.velox * nx + otraBolita.vector.veloy * ny;
-
-          let v1t = -elem.vector.velox * ny + elem.vector.veloy * nx;
-          let v2t =
-            -otraBolita.vector.velox * ny + otraBolita.vector.veloy * nx;
-          let v1nFinal =
-            (e * (otraBolita.masa - elem.masa) * v1n +
-              2 * otraBolita.masa * v2n) /
-            (elem.masa + otraBolita.masa);
-          let v2nFinal =
-            (e * (elem.masa - otraBolita.masa) * v2n + 2 * elem.masa * v1n) /
-            (elem.masa + otraBolita.masa);
-          console.log(v1nFinal);
-
-          if (botonni.classList.contains("fa-stop")) {
-            elem.vector.velox = v1t * -ny + v1nFinal * nx * e;
-            elem.vector.veloy = v1t * nx + v1nFinal * ny * e;
-
-            otraBolita.vector.velox = v2t * -ny + v2nFinal * nx * e;
-            otraBolita.vector.veloy = v2t * nx + v2nFinal * ny * e;
-          }
-
-          const overlap = elem.rad + otraBolita.rad - distance;
-          elem.x -= (overlap / 2) * nx;
-          elem.y -= (overlap / 2) * ny;
-          otraBolita.x += (overlap / 2) * nx;
-          otraBolita.y += (overlap / 2) * ny;
-        }
-      });
-    });
+arr_particulas.push(part_1, part_2);
+// Funcion que mantiene la particula dentro del Canvas
+const mantener_en_canvas = (part) => {
+  if (part.x + part.rad >= canvas.width) {
+    if (boton_reproduccion.classList.contains("fa-stop")) {
+      part.vector.velox = -1 * part.vector.velox;
+    }
+    part.x = canvas.width - part.rad; // Asegura que la partícula esté dentro del canvas
   }
-  $btnPos1x.value = Math.round(circuloRojo.x - 375);
-  $btnPos1y.value = Math.round(circuloRojo.y - 200);
-  $btnPos2x.value = Math.round(mideo.x - 375);
-  $btnPos2y.value = Math.round(mideo.y - 200);
+  if (part.y + part.rad >= canvas.height) {
+    if (boton_reproduccion.classList.contains("fa-stop")) {
+      part.vector.veloy = -1 * part.vector.veloy;
+    }
+    part.y = canvas.height - part.rad; // Asegura que la partícula esté dentro del canvas
+  }
+  if (part.x - part.rad <= 0) {
+    if (boton_reproduccion.classList.contains("fa-stop")) {
+      part.vector.velox = -1 * part.vector.velox;
+    }
+    part.x = part.rad; // Asegura que la partícula esté dentro del canvas
+  }
+  if (part.y - part.rad <= 0) {
+    if (boton_reproduccion.classList.contains("fa-stop")) {
+      part.vector.veloy = -1 * part.vector.veloy;
+    }
+    part.y = part.rad; // Asegura que la partícula esté dentro del canvas
+  }
+};
+const dibujar_ctx_particula = (part) => {
+  ctx.beginPath();
+  ctx.fillStyle = part.color;
+  ctx.arc(part.x, part.y, part.rad, 0, 2 * Math.PI);
+  ctx.fill();
+};
+const dibujar_ctx_vector = (part) => {
+  ctx.beginPath();
+  ctx.fillStyle = part.color;
+  ctx.moveTo(part.x, part.y);
+  ctx.lineTo(part.x + part.vector.velox * 24, part.y + part.vector.veloy * 24);
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
-  $btnMoment1.value = (
+  if (part.vector.velox !== 0 || part.vector.veloy !== 0) {
+    // Calcular las coordenadas de la punta de la flecha
+    var arrowX = part.x + part.vector.velox * 25;
+    var arrowY = part.y + part.vector.veloy * 25;
+
+    // Dibujar la punta de la flecha
+    ctx.save();
+    ctx.translate(arrowX, arrowY);
+    ctx.rotate(Math.atan2(part.vector.veloy, part.vector.velox));
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-18, -9); // Primer extremo de la flecha
+    ctx.lineTo(-18, 9); // Segundo extremo de la flecha
+    ctx.closePath();
+    ctx.strokeStyle = "black"; // Color del borde
+    ctx.lineWidth = 1; // Ancho del borde
+    ctx.stroke(); // Dibujar el borde
+
+    ctx.fillStyle = part.color;
+    ctx.fill(); // Llenar la flecha
+    ctx.restore();
+  }
+};
+// Funcion que dibuja la particula
+const dibuja_particula = (part) => {
+  // No se mueve, No se dibuja el vector, Si se muestra
+  if (!part.move && !part.vector.dibujar && part.mostrar) {
+    dibujar_ctx_particula(part);
+  }
+  // No se mueve, Si VECTORES, Si se muestra
+  if (!part.move && part.vector.dibujar && part.mostrar) {
+    dibujar_ctx_particula(part);
+    dibujar_ctx_vector(part);
+  }
+  // Se mueve, Si vectores, Si se muestra
+  if (part.move && part.vector.dibujar && part.mostrar) {
+    part.x += part.vector.velox;
+    part.y += part.vector.veloy;
+
+    dibujar_ctx_particula(part);
+    dibujar_ctx_vector(part);
+  }
+  // Se mueve, No vectores, Si se muestra
+  if (part.move && !part.vector.dibujar && part.mostrar) {
+    part.x += part.vector.velox;
+    part.y += part.vector.veloy;
+
+    dibujar_ctx_particula(part);
+  }
+};
+
+// Funcion que realiza la colision
+const animar_colision = () => {
+  if (detectarColision(part_1, part_2)) {
+    const dx = part_2.x - part_1.x;
+    const dy = part_2.y - part_1.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    // VECTOR UNITARIO NORMAL
+    const nx = dx / distance;
+    const ny = dy / distance;
+
+    // Velocidades antes
+    const pre_vel_x_1 = parseFloat($btn1Velox.value);
+    const pre_vel_y_1 = parseFloat($btn1Veloy.value);
+
+    const pre_vel_x_2 = parseFloat($btn2Velox.value);
+    const pre_vel_y_2 = parseFloat($btn2Veloy.value);
+
+    const v1n = part_1.vector.velox * nx + part_1.vector.veloy * ny;
+
+    const v2n = part_2.vector.velox * nx + part_2.vector.veloy * ny;
+
+    let v1t = -part_1.vector.velox * ny + part_1.vector.veloy * nx;
+
+    let v2t = -part_2.vector.velox * ny + part_2.vector.veloy * nx;
+
+    let v1nFinal =
+      (part_1.masa * v1n +
+        part_2.masa * v2n -
+        part_2.masa * e * v1n +
+        part_2.masa * e * v2n) /
+      (part_1.masa + part_2.masa);
+
+    /*let v1nFinal =
+            (e * (part_2.masa - part_1.masa) * v1n +
+              2 * part_2.masa * v2n) /
+            (part_1.masa + part_2.masa);*/
+    let v2nFinal =
+      (part_1.masa * v1n +
+        part_2.masa * v2n +
+        part_1.masa * e * v1n -
+        part_1.masa * e * v2n) /
+      (part_1.masa + part_2.masa);
+    /*let v2nFinal =
+            (e * (part_1.masa - part_2.masa) * v2n + 2 * part_1.masa * v1n) /
+            (part_1.masa + part_2.masa);*/
+
+    if (boton_reproduccion.classList.contains("fa-stop")) {
+      part_1.vector.velox = v1t * -ny + v1nFinal * nx;
+      part_1.vector.veloy = v1t * nx + v1nFinal * ny;
+
+      part_2.vector.velox = v2t * -ny + v2nFinal * nx;
+      part_2.vector.veloy = v2t * nx + v2nFinal * ny;
+    }
+    const obj_dx = part_2.x - part_1.x - 50;
+    const obj_dy = part_1.y - part_2.y;
+    const obj_distance = Math.sqrt(obj_dx * obj_dx + obj_dy * obj_dy);
+    const obj_nx = obj_dx / obj_distance;
+    const obj_ny = obj_dy / obj_distance;
+    const obj_proy_tang_1 = -pre_vel_x_1 * obj_ny + pre_vel_y_1 * obj_nx;
+    const obj_proy_norm_1 = pre_vel_x_1 * obj_nx + pre_vel_y_1 * obj_ny;
+    const obj_proy_tang_2 = -pre_vel_x_2 * obj_ny + pre_vel_y_2 * obj_nx;
+    const obj_proy_norm_2 = pre_vel_x_2 * obj_nx + pre_vel_y_2 * obj_ny;
+
+    const colission_info = {
+      particulas: [part_1, part_2],
+      e,
+      shock_part1: {
+        coord_x: part_1.x - 360,
+        coord_y: -(part_1.y - 200),
+        velo_pre: { x: pre_vel_x_1, y: pre_vel_y_1 },
+        velo_pre_mod: redondeo_cientifico(
+          Math.sqrt(pre_vel_x_1 * pre_vel_x_1 + pre_vel_y_1 * pre_vel_y_1)
+        ),
+        velo_post: {
+          x: redondeo_cientifico((part_1.vector.velox * 4) / 10),
+          y: redondeo_cientifico((part_1.vector.veloy * -4) / 10),
+        },
+      },
+      shock_part2: {
+        coord_x: part_2.x - 410,
+        coord_y: -(part_2.y - 200),
+        velo_pre: { x: pre_vel_x_2, y: pre_vel_y_2 },
+        velo_pre_mod: redondeo_cientifico(
+          Math.sqrt(pre_vel_x_2 * pre_vel_x_2 + pre_vel_y_2 * pre_vel_y_2)
+        ),
+        velo_post: {
+          x: redondeo_cientifico((part_2.vector.velox * 4) / 10),
+          y: redondeo_cientifico((part_2.vector.veloy * -4) / 10),
+        },
+      },
+      vect_unit_linea_impacto: { x: obj_nx, y: obj_ny },
+      vect_unit_plano_contacto: { x: -obj_ny, y: obj_nx },
+      proyecciones: {
+        obj_proy_norm_1,
+        obj_proy_norm_2,
+        obj_proy_tang_1,
+        obj_proy_tang_2,
+      },
+    };
+
+    console.log(colission_info);
+
+    const overlap = part_1.rad + part_2.rad - distance;
+    part_1.x -= (overlap / 2) * nx;
+    part_1.y -= (overlap / 2) * ny;
+    part_2.x += (overlap / 2) * nx;
+    part_2.y += (overlap / 2) * ny;
+  }
+};
+const redondeo_cientifico = (num) => {
+  return Math.round(num.toFixed(5) * 10000) / 10000;
+};
+// FUNCION DE ANIMACION OJO OJO
+const animate = () => {
+  // Limpiar el lienzo
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Mantener en el canvas a las particulas
+  mantener_en_canvas(part_1);
+  mantener_en_canvas(part_2);
+  // Dibujar a las particulas
+  dibuja_particula(part_1);
+  dibuja_particula(part_2);
+  // Verificar y animar colision colision
+  animar_colision();
+
+  // VALORES
+  $btnPos1x.value = Math.round(part_1.x - 360);
+  $btnPos1y.value = -1 * Math.round(part_1.y - 200);
+  $btnPos2x.value = Math.round(part_2.x - 410);
+  $btnPos2y.value = -1 * Math.round(part_2.y - 200);
+
+  $btnMoment1.value = redondeo_cientifico(
     Math.sqrt(
       $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
-    ).toFixed(1) *
-    (circuloRojo.masa / 1000)
-  ).toFixed(2);
-  $btnMoment2.value = (
+    ) *
+      (part_1.masa / 1000)
+  );
+  $btnMoment2.value = redondeo_cientifico(
     Math.sqrt(
       $btn2Velox.value * $btn2Velox.value + $btn2Veloy.value * $btn2Veloy.value
-    ).toFixed(1) *
-    (mideo.masa / 1000)
-  ).toFixed(2);
+    ) *
+      (part_2.masa / 1000)
+  );
   const MomentoTotal =
     parseFloat($btnMoment1.value) + parseFloat($btnMoment2.value);
-  $momentoSistema.textContent = "P = " + MomentoTotal.toFixed(2);
-  $btnVelo1.value = Math.sqrt(
-    $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
-  ).toFixed(1);
-  $btnVelo2.value = Math.sqrt(
-    $btn2Velox.value * $btn2Velox.value + $btn2Veloy.value * $btn2Veloy.value
-  ).toFixed(1);
 
-  const EnergiaTotal = (
+  $momentoSistema.textContent =
+    "P = " + redondeo_cientifico(MomentoTotal) + " kgm/s";
+
+  $btnVelo1.value = redondeo_cientifico(
+    Math.sqrt(
+      $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
+    )
+  );
+  $btnVelo2.value = redondeo_cientifico(
+    Math.sqrt(
+      $btn2Velox.value * $btn2Velox.value + $btn2Veloy.value * $btn2Veloy.value
+    )
+  );
+
+  const EnergiaTotal = redondeo_cientifico(
     0.5 *
-    ((circuloRojo.masa / 1000) *
-      parseFloat($btnVelo1.value) *
-      parseFloat($btnVelo1.value) +
-      (mideo.masa / 1000) *
-        parseFloat($btnVelo2.value) *
-        parseFloat($btnVelo2.value))
-  ).toFixed(2);
+      ((part_1.masa / 1000) *
+        parseFloat($btnVelo1.value) *
+        parseFloat($btnVelo1.value) +
+        (part_2.masa / 1000) *
+          parseFloat($btnVelo2.value) *
+          parseFloat($btnVelo2.value))
+  );
 
-  $energiaSistema.textContent = "E = " + EnergiaTotal;
-  if (botonni.classList.contains("fa-stop")) {
-    $btn1Velox.value = ((circuloRojo.vector.velox * 4) / 10).toFixed(1);
-    $btn1Veloy.value = ((circuloRojo.vector.veloy * -4) / 10).toFixed(1);
-    $btn2Velox.value = ((mideo.vector.velox * 4) / 10).toFixed(1);
-    $btn2Veloy.value = ((mideo.vector.veloy * -4) / 10).toFixed(1);
+  $energiaSistema.textContent = "E = " + EnergiaTotal + " J";
+  if (boton_reproduccion.classList.contains("fa-stop")) {
+    $btn1Velox.value = redondeo_cientifico((part_1.vector.velox * 4) / 10);
+    $btn1Veloy.value = redondeo_cientifico((part_1.vector.veloy * -4) / 10);
+    $btn2Velox.value = redondeo_cientifico((part_2.vector.velox * 4) / 10);
+    $btn2Veloy.value = redondeo_cientifico((part_2.vector.veloy * -4) / 10);
   }
   requestAnimationFrame(animate);
 };
-const toMasa = (pixeles) => Math.round((1100 / 15) * pixeles - 26000 / 15);
-const toPixel = (masa) => Math.round((15 / 1100) * masa + 260 / 11);
 
-const circuloRojo = new particula(toPixel(100), 100, 200, 5, 0, "#103cd4", 100);
-const mideo = new particula(toPixel(100), 375, 120, -3, 3, "green", 500);
-bolitas.push(circuloRojo, mideo);
 const pintarStage = function () {
-  bolitas.forEach((e) => {
-    e.mostrar = true;
-  });
+  part_1.mostrar = true;
+  part_2.mostrar = true;
 };
 const play = function () {
   iniciarGrabacion();
-  botonni.classList.remove("fa-play");
-  botonni.classList.add("fa-stop");
-  bolitas.forEach((e) => {
-    e.move = true;
-  });
+  boton_reproduccion.classList.remove("fa-play");
+  boton_reproduccion.classList.add("fa-stop");
+  part_1.move = true;
+  part_2.move = true;
 };
 const stop = function () {
   if (valores.length > 0) {
-    botonVisualizar.classList.remove("disabled");
+    btn_graficas.classList.remove("disabled");
   }
   if (grabacionActiva) {
     pausarGrabacion();
-    carita.data.labels = tiempo;
-    carita.data.datasets[0].data = valores;
-    carita.data.datasets[1].data = valores2;
-    carita.update();
+    grafico.data.labels = tiempo;
+    grafico.data.datasets[0].data = valores;
+    grafico.data.datasets[1].data = valores2;
+    grafico.update();
   }
-  console.log(tiempo);
-  console.log(valores);
-  console.log(valores2);
-  botonni.classList.contains("fa-play");
-  botonni.classList.remove("fa-stop");
-  botonni.classList.add("fa-play");
-  bolitas.forEach((e) => {
+
+  boton_reproduccion.classList.contains("fa-play");
+  boton_reproduccion.classList.remove("fa-stop");
+  boton_reproduccion.classList.add("fa-play");
+  arr_particulas.forEach((e) => {
     e.move = false;
   });
 };
 const pintarVectores = function () {
-  bolitas.forEach((e) => {
+  arr_particulas.forEach((e) => {
     e.vector.dibujar = true;
   });
 };
 const borrarVectores = function () {
-  bolitas.forEach((e) => {
+  arr_particulas.forEach((e) => {
     e.vector.dibujar = false;
   });
 };
 
 document.addEventListener("click", (e) => {
   if (e.target.matches(".reproduccion") || e.target.matches(".cont-repro")) {
-    if (botonni.classList.contains("fa-play")) {
-      botonVisualizar.classList.add("disabled");
+    if (boton_reproduccion.classList.contains("fa-play")) {
+      btn_graficas.classList.add("disabled");
       play();
     } else {
       stop();
@@ -435,8 +504,8 @@ document.addEventListener("click", (e) => {
   }
 
   if (
-    e.target === botonVisualizar &&
-    !botonVisualizar.classList.contains("disabled")
+    e.target === btn_graficas &&
+    !btn_graficas.classList.contains("disabled")
   ) {
     $modal.classList.add("activemodal");
   }
@@ -446,7 +515,7 @@ document.addEventListener("click", (e) => {
   }
 
   if (
-    e.target !== botonVisualizar &&
+    e.target !== btn_graficas &&
     !e.target.matches("#graph") &&
     !e.target.matches(".container-canvas")
   ) {
@@ -458,7 +527,7 @@ canvas.addEventListener("mousedown", (e) => {
   const mouseX = e.clientX - canvas.getBoundingClientRect().left;
   const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
-  bolitas.forEach((bolita) => {
+  arr_particulas.forEach((bolita) => {
     if (
       Math.sqrt((mouseX - bolita.x) ** 2 + (mouseY - bolita.y) ** 2) <=
       bolita.rad
@@ -470,32 +539,32 @@ canvas.addEventListener("mousedown", (e) => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
-  if (bolitas.some((bolita) => bolita.isDragging)) {
-    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+  // Obtener la posición del mouse en el canvas
+  const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+  const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
-    bolitas.forEach((bolita) => {
-      if (bolita.isDragging) {
-        bolita.x = mouseX;
-        bolita.y = mouseY;
+  // Verificar si alguna partícula está siendo arrastrada
+  arr_particulas.forEach((bolita) => {
+    if (bolita.isDragging) {
+      // Actualizar la posición de la bolita en múltiplos de 5
+      bolita.x = Math.round(mouseX / 5) * 5;
+      bolita.y = Math.round(mouseY / 5) * 5;
 
-        // Evitar que la bolita se salga de los bordes del canvas
-        if (bolita.x - bolita.rad < 0) {
-          bolita.x = bolita.rad;
-        } else if (bolita.x + bolita.rad > canvas.width) {
-          bolita.x = canvas.width - bolita.rad;
-        }
-        if (bolita.y - bolita.rad < 0) {
-          bolita.y = bolita.rad;
-        } else if (bolita.y + bolita.rad > canvas.height) {
-          bolita.y = canvas.height - bolita.rad;
-        }
-      }
-    });
-  }
+      // Restringir la posición dentro de los bordes del canvas
+      bolita.x = Math.max(
+        bolita.rad,
+        Math.min(canvas.width - bolita.rad, bolita.x)
+      );
+      bolita.y = Math.max(
+        bolita.rad,
+        Math.min(canvas.height - bolita.rad, bolita.y)
+      );
+    }
+  });
 });
+
 canvas.addEventListener("mouseup", () => {
-  bolitas.forEach((e) => {
+  arr_particulas.forEach((e) => {
     e.isDragging = false;
   });
 });
@@ -504,7 +573,7 @@ function detectarColision(bolitaA, bolitaB) {
   const distancia = Math.sqrt(
     (bolitaA.x - bolitaB.x) ** 2 + (bolitaA.y - bolitaB.y) ** 2
   );
-  return distancia < bolitaA.rad + bolitaB.rad;
+  return distancia <= bolitaA.rad + bolitaB.rad;
 }
 
 $btnall.forEach((e) => {
@@ -512,55 +581,56 @@ $btnall.forEach((e) => {
     stop();
   });
 });
-$btnPos1x.value = circuloRojo.x - 375;
-$btnPos1y.value = circuloRojo.y - 200;
-$btnPos2x.value = mideo.x - 375;
-$btnPos2y.value = mideo.y - 200;
-$btn1Velox.value = Math.round((circuloRojo.vector.velox * 4) / 10);
-$btn1Veloy.value = Math.round((circuloRojo.vector.veloy * 4) / 10);
-$btn2Velox.value = Math.round((mideo.vector.velox * 4) / 10);
-$btn2Veloy.value = Math.round((mideo.vector.veloy * 4) / 10);
+
+$btnPos1x.value = part_1.x - 375;
+$btnPos1y.value = part_1.y - 200;
+$btnPos2x.value = part_2.x - 375;
+$btnPos2y.value = part_2.y - 200;
+$btn1Velox.value = redondeo_cientifico((part_1.vector.velox * 4) / 10);
+$btn1Veloy.value = redondeo_cientifico((part_1.vector.veloy * 4) / 10);
+$btn2Velox.value = redondeo_cientifico((part_2.vector.velox * 4) / 10);
+$btn2Veloy.value = -1 * redondeo_cientifico((part_2.vector.veloy * 4) / 10);
 $btn1Masa.value = 0.1;
 $btn2Masa.value = 0.1;
 $btnMoment1.value =
   (Math.sqrt(
     $btn1Velox.value * $btn1Velox.value + $btn1Veloy.value * $btn1Veloy.value
   ).toFixed(1) *
-    circuloRojo.masa) /
+    part_1.masa) /
   1000;
 $btnMoment2.value =
   (Math.sqrt(
     $btn2Velox.value * $btn2Velox.value + $btn2Veloy.value * $btn2Veloy.value
   ).toFixed(1) *
-    mideo.masa) /
+    part_2.masa) /
   1000;
 
 $btn1Velox.addEventListener("input", () => {
-  if ($btn1Velox.value > -4 && $btn1Velox.value < 4)
-    circuloRojo.vector.velox = ($btn1Velox.value * 10) / 4;
+  if ($btn1Velox.value >= -4 && $btn1Velox.value <= 4)
+    part_1.vector.velox = ($btn1Velox.value * 10) / 4;
 });
 $btn1Veloy.addEventListener("input", () => {
-  if ($btn1Veloy.value > -4 && $btn1Veloy.value < 4)
-    circuloRojo.vector.veloy = (-1 * ($btn1Veloy.value * 10)) / 4;
+  if ($btn1Veloy.value >= -4 && $btn1Veloy.value <= 4)
+    part_1.vector.veloy = (-1 * ($btn1Veloy.value * 10)) / 4;
 });
 $btn2Velox.addEventListener("input", () => {
-  if ($btn2Velox.value > -4 && $btn2Velox.value < 4)
-    mideo.vector.velox = ($btn2Velox.value * 10) / 4;
+  if ($btn2Velox.value >= -4 && $btn2Velox.value <= 4)
+    part_2.vector.velox = ($btn2Velox.value * 10) / 4;
 });
 $btn2Veloy.addEventListener("input", () => {
-  if ($btn2Veloy.value > -4 && $btn2Veloy.value < 4)
-    mideo.vector.veloy = (-1 * ($btn2Veloy.value * 10)) / 4;
+  if ($btn2Veloy.value >= -4 && $btn2Veloy.value <= 4)
+    part_2.vector.veloy = (-1 * ($btn2Veloy.value * 10)) / 4;
 });
 $btn1Masa.addEventListener("input", () => {
   if ($btn1Masa.value > 0 && $btn1Masa.value < 1.2) {
-    circuloRojo.masa = $btn1Masa.value * 1000;
-    circuloRojo.rad = toPixel($btn1Masa.value * 1000);
+    part_1.masa = $btn1Masa.value * 1000;
+    part_1.rad = toPixel($btn1Masa.value * 1000);
   }
 });
 $btn2Masa.addEventListener("input", () => {
   if ($btn2Masa.value > 0 && $btn2Masa.value < 1.2) {
-    mideo.masa = $btn2Masa.value * 1000;
-    mideo.rad = toPixel($btn2Masa.value * 1000);
+    part_2.masa = $btn2Masa.value * 1000;
+    part_2.rad = toPixel($btn2Masa.value * 1000);
   }
 });
 
@@ -582,7 +652,6 @@ $viewVectores.addEventListener("input", () => {
 $rangoBTN.addEventListener("input", () => {
   $rangoVisor.textContent = $rangoBTN.value + "%";
   e = parseFloat($rangoBTN.value) / 100;
-  console.log(e);
 });
 animate();
 pintarStage();
