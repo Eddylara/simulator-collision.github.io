@@ -9,6 +9,7 @@
 .head {
   margin-bottom: 10px;
 }
+
 .tabletitle1 {
   background: #103ad4;
   color: #fff;
@@ -196,4 +197,8 @@ tr {
 }
 .activemodal {
   transform: translate(0px, 0px);
+}
+.energiaSis,
+.momentoSis {
+  user-select: none;
 }
