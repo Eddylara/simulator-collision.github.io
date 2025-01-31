@@ -10,12 +10,21 @@ const btn_graficas = document.querySelector(".vermodalboton"); // Boton que mues
 
 let tiempoInicio;
 let tiempo = [];
-let valores = [];
-let valores2 = [];
+let momento_valores_grafica = [];
+let momento_valores_grafica2 = [];
+let energia_valores_grafica = [];
+let energia_valores_grafica2 = [];
+let velocidad_valores_grafica = [];
+let velocidad_valores_grafica2 = [];
 let grabacionActiva = false;
 let intervalo;
 
 const ctx2 = document.getElementById("graph"); // Contexto 2 para la grafica
+// Botones de graficas
+const moment_t_btn_graph = document.getElementById("m_vs_t");
+const moment_v_btn_graph = document.getElementById("m_vs_v");
+const energia_v_btn_graph = document.getElementById("e_vs_v");
+const btns_graph = document.querySelectorAll(".graph_btn");
 
 const toPixel = (masa) => {
   const pixelValue = Math.round((15 / 1100) * masa + 240 / 11);
@@ -24,8 +33,12 @@ const toPixel = (masa) => {
 
 function iniciarGrabacion() {
   tiempo = [];
-  valores = [];
-  valores2 = [];
+  momento_valores_grafica = [];
+  momento_valores_grafica2 = [];
+  energia_valores_grafica = [];
+  energia_valores_grafica2 = [];
+  velocidad_valores_grafica = [];
+  velocidad_valores_grafica2 = [];
 
   tiempoInicio = new Date().getTime();
   grabacionActiva = true;
@@ -38,9 +51,21 @@ function registrarValor() {
     const tiempoTranscurrido = tiempoActual - tiempoInicio;
     const valorActual = parseFloat($btnMoment1.value);
     const valorActual2 = parseFloat($btnMoment2.value);
+    const valor_energia = redondeo_cientifico(
+      0.5 * $btn1Masa.value * $btnVelo1.value * $btnVelo1.value
+    );
+    const valor_energia2 = redondeo_cientifico(
+      0.5 * $btn2Masa.value * $btnVelo2.value * $btnVelo2.value
+    );
+    const valor_velocidad = redondeo_cientifico($btnVelo1.value);
+    const valor_velocidad2 = redondeo_cientifico($btnVelo2.value);
     tiempo.push(tiempoTranscurrido);
-    valores.push(valorActual);
-    valores2.push(valorActual2);
+    momento_valores_grafica.push(valorActual);
+    momento_valores_grafica2.push(valorActual2);
+    energia_valores_grafica.push(valor_energia);
+    energia_valores_grafica2.push(valor_energia2);
+    velocidad_valores_grafica.push(valor_velocidad);
+    velocidad_valores_grafica2.push(valor_velocidad2);
   }
 }
 
@@ -48,8 +73,12 @@ function pausarGrabacion() {
   grabacionActiva = false;
   clearInterval(intervalo);
   tiempo = tiempo.map((e) => parseFloat((e / 1000).toFixed(2)));
-  valores = valores.map((e) => parseFloat(e.toFixed(2)));
-  valores2 = valores2.map((e) => parseFloat(e.toFixed(2)));
+  momento_valores_grafica = momento_valores_grafica.map((e) =>
+    parseFloat(e.toFixed(2))
+  );
+  momento_valores_grafica2 = momento_valores_grafica2.map((e) =>
+    parseFloat(e.toFixed(2))
+  );
 }
 
 // Obtener botones de introduccion
@@ -118,7 +147,7 @@ const arch = {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Segundos [s]",
+          text: "Tiempo [s]",
           fontSize: 14,
         },
       },
@@ -132,7 +161,7 @@ const arch = {
   },
 };
 
-const grafico = new Chart(ctx2, arch);
+let grafico = new Chart(ctx2, arch);
 
 // Clase de la partircula
 class particula {
@@ -382,7 +411,7 @@ const animar_colision = () => {
   }
 };
 const redondeo_cientifico = (num) => {
-  return Math.round(num.toFixed(5) * 10000) / 10000;
+  return Math.round(parseFloat(num).toFixed(5) * 10000) / 10000;
 };
 // FUNCION DE ANIMACION OJO OJO
 const animate = () => {
@@ -464,14 +493,14 @@ const play = function () {
   part_2.move = true;
 };
 const stop = function () {
-  if (valores.length > 0) {
+  if (momento_valores_grafica.length > 0) {
     btn_graficas.classList.remove("disabled");
   }
   if (grabacionActiva) {
     pausarGrabacion();
     grafico.data.labels = tiempo;
-    grafico.data.datasets[0].data = valores;
-    grafico.data.datasets[1].data = valores2;
+    grafico.data.datasets[0].data = momento_valores_grafica;
+    grafico.data.datasets[1].data = momento_valores_grafica2;
     grafico.update();
   }
 
@@ -512,12 +541,19 @@ document.addEventListener("click", (e) => {
 
   if (e.target.matches(".closebottom")) {
     $modal.classList.remove("activemodal");
+    btns_graph.forEach((e) => {
+      e.classList.remove("btn_disabled");
+    });
+    moment_t_btn_graph.classList.add("btn_disabled");
   }
 
   if (
     e.target !== btn_graficas &&
     !e.target.matches("#graph") &&
-    !e.target.matches(".container-canvas")
+    !e.target.matches(".container-canvas") &&
+    !e.target.matches(".container_graph_selection") &&
+    !e.target.matches(".graph_btn") &&
+    !e.target.matches(".btn_disabled")
   ) {
     $modal.classList.remove("activemodal");
   }
@@ -604,6 +640,229 @@ $btnMoment2.value =
   ).toFixed(1) *
     part_2.masa) /
   1000;
+
+btns_graph.forEach((b) => {
+  b.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("btn_disabled")) {
+      btns_graph.forEach((btn) => {
+        btn.classList.remove("btn_disabled");
+      });
+
+      e.target.classList.add("btn_disabled");
+
+      if (e.target === moment_t_btn_graph) {
+        const arch = {
+          type: "line",
+          data: {
+            labels: tiempo, // Usamos las etiquetas de tiempo
+            datasets: [
+              {
+                label: "Cuerpo 1",
+                data: momento_valores_grafica,
+                borderWidth: 2,
+                backgroundColor: "rgba(16, 58, 212, 0.3)",
+                borderColor: "#103ad4",
+                pointRadius: 0, // Configurado en cero para eliminar los puntos
+              },
+              {
+                label: "Cuerpo 2",
+                data: momento_valores_grafica2,
+                borderWidth: 2,
+                backgroundColor: "rgba(0, 128, 0, 0.3)",
+                borderColor: "green",
+                pointRadius: 0, // Configurado en cero para eliminar los puntos
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Momento Lineal [Kgm/s]",
+                  fontSize: 14,
+                },
+              },
+              x: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Tiempo [s]",
+                  fontSize: 14,
+                },
+              },
+            },
+            legend: {
+              display: true,
+              labels: {
+                fontSize: 12,
+              },
+            },
+          },
+        };
+        if (grafico) {
+          grafico.destroy();
+        }
+        grafico = new Chart(ctx2, arch);
+        grafico.update();
+      } else if (e.target === moment_v_btn_graph) {
+        const arch = {
+          type: "scatter", // Cambiar el tipo de gráfico a 'scatter' (puntos)
+          data: {
+            labels: velocidad_valores_grafica, // Usamos las velocidades como etiquetas para el eje x
+            datasets: [
+              {
+                label: "Cuerpo 1",
+                data: [
+                  ...new Set(
+                    velocidad_valores_grafica.map(
+                      (e, i) => `${e}-${momento_valores_grafica[i]}`
+                    )
+                  ),
+                ].map((item) => {
+                  const [x, y] = item.split("-");
+                  return { x: parseFloat(x), y: parseFloat(y) };
+                }),
+                borderWidth: 2,
+                backgroundColor: "rgba(16, 58, 212, 0.3)",
+                borderColor: "#103ad4",
+                pointRadius: 5, // Ajusta el tamaño de los puntos
+              },
+              {
+                label: "Cuerpo 2",
+                data: [
+                  ...new Set(
+                    velocidad_valores_grafica2.map(
+                      (e, i) => `${e}-${momento_valores_grafica2[i]}`
+                    )
+                  ),
+                ].map((item) => {
+                  const [x, y] = item.split("-");
+                  return { x: parseFloat(x), y: parseFloat(y) };
+                }),
+                borderWidth: 2,
+                backgroundColor: "rgba(0, 128, 0, 0.3)",
+                borderColor: "green",
+                pointRadius: 5, // Ajusta el tamaño de los puntos
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Momento Lineal [Kgm/s]",
+                  fontSize: 14,
+                },
+              },
+              x: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Velocidad [m/s]",
+                  fontSize: 14,
+                },
+                type: "linear", // Asegura que el eje X sea lineal
+                position: "bottom",
+              },
+            },
+            legend: {
+              display: true,
+              labels: {
+                fontSize: 12,
+              },
+            },
+          },
+        };
+        if (grafico) {
+          grafico.destroy();
+        }
+        grafico = new Chart(ctx2, arch);
+        grafico.update();
+      } else if (e.target === energia_v_btn_graph) {
+        const arch = {
+          type: "scatter", // Tipo de gráfico de dispersión (puntos)
+          data: {
+            labels: velocidad_valores_grafica, // Usamos las velocidades como etiquetas para el eje X
+            datasets: [
+              {
+                label: "Cuerpo 1",
+                data: [
+                  ...new Set(
+                    velocidad_valores_grafica.map(
+                      (e, i) => `${e}-${energia_valores_grafica[i]}`
+                    )
+                  ),
+                ].map((item) => {
+                  const [x, y] = item.split("-");
+                  return { x: parseFloat(x), y: parseFloat(y) };
+                }),
+                borderWidth: 2,
+                backgroundColor: "rgba(16, 58, 212, 0.3)",
+                borderColor: "#103ad4",
+                pointRadius: 5, // Ajuste del tamaño de los puntos
+              },
+              {
+                label: "Cuerpo 2",
+                data: [
+                  ...new Set(
+                    velocidad_valores_grafica2.map(
+                      (e, i) => `${e}-${energia_valores_grafica2[i]}`
+                    )
+                  ),
+                ].map((item) => {
+                  const [x, y] = item.split("-");
+                  return { x: parseFloat(x), y: parseFloat(y) };
+                }),
+                borderWidth: 2,
+                backgroundColor: "rgba(0, 128, 0, 0.3)",
+                borderColor: "green",
+                pointRadius: 5, // Ajuste del tamaño de los puntos
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Energía [Kgm/s]",
+                  fontSize: 14,
+                },
+              },
+              x: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Velocidad [m/s]",
+                  fontSize: 14,
+                },
+                type: "linear", // Asegura que el eje X sea lineal
+                position: "bottom",
+              },
+            },
+            legend: {
+              display: true,
+              labels: {
+                fontSize: 12,
+              },
+            },
+          },
+        };
+
+        if (grafico) {
+          grafico.destroy();
+        }
+        grafico = new Chart(ctx2, arch);
+        grafico.update();
+      }
+    }
+  });
+});
 
 $btn1Velox.addEventListener("input", () => {
   if ($btn1Velox.value >= -4 && $btn1Velox.value <= 4)
