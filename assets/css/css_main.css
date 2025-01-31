@@ -21,10 +21,10 @@
 .mediumtitle {
   background: #ebeaea;
 }
-/* #103cd4 Solo a ti te queda bien
-  #85c1e9 nadie te ve como te puedo ver*/
+/* #103cd4
+  #85c1e9*/
 body {
-  background-image: url(../img/wall/Untitled.svg);
+  /*background-image: url(../img/wall/Untitled.svg);*/
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
@@ -147,12 +147,46 @@ tr {
   transition: transform 600ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
 }
 .container-canvas {
+  width: 1200px;
+  height: 550px;
+  background: #fff;
+  padding: 20px;
+  position: relative;
+
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+#graph {
   width: 1000px;
   height: 500px;
-  background: #fff;
-  padding: 2rem;
-  position: relative;
 }
+.container_graph_selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.graph_btn {
+  background-color: #284ccf; /* Azul principal del diseño */
+  color: white;
+  border: none;
+
+  padding: 7px 12px;
+
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.1s ease, transform 0.1s linear;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn_disabled {
+  border: none;
+  background-color: #7d7d7d;
+  cursor: not-allowed;
+  opacity: 0.6;
+  padding: 7px 12px;
+}
+
 .closebottom {
   background: red;
   position: absolute;
