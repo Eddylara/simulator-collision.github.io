@@ -104,6 +104,7 @@ const $btnall = document.querySelectorAll(".inputVal"),
 const $viewEnergia = document.getElementById("viewE"),
   $viewMomento = document.getElementById("viewMoment"),
   $viewVectores = document.getElementById("viewVectores"),
+  $viewEjes = document.getElementById("viewEjes"),
   $rangoBTN = document.getElementById("rangeE"),
   $momentoSistema = document.querySelector(".momentoSis"),
   $energiaSistema = document.querySelector(".energiaSis"),
@@ -181,6 +182,7 @@ class particula {
       veloy,
     };
     this.color = color;
+    this.dib_ejes = false;
   }
   dibujar() {
     this.mostrar = true;
@@ -275,29 +277,60 @@ const dibujar_ctx_vector = (part) => {
 };
 // Funcion que dibuja la particula
 const dibuja_particula = (part) => {
-  // No se mueve, No se dibuja el vector, Si se muestra
-  if (!part.move && !part.vector.dibujar && part.mostrar) {
+  // No se mueve, No se dibuja el vector, Se muestra, No se dibuja ejes
+  if (!part.move && !part.vector.dibujar && part.mostrar && !part.dib_ejes) {
     dibujar_ctx_particula(part);
   }
-  // No se mueve, Si VECTORES, Si se muestra
-  if (!part.move && part.vector.dibujar && part.mostrar) {
+
+  // No se mueve, No se dibuja el vector, Se muestra, Se dibuja ejes
+  if (!part.move && !part.vector.dibujar && part.mostrar && part.dib_ejes) {
+    dibujar_ctx_particula(part);
+    dibujar_ejes(part);
+  }
+
+  // No se mueve, Se dibuja el vector, Se muestra, No se dibuja ejes
+  if (!part.move && part.vector.dibujar && part.mostrar && !part.dib_ejes) {
     dibujar_ctx_particula(part);
     dibujar_ctx_vector(part);
   }
-  // Se mueve, Si vectores, Si se muestra
-  if (part.move && part.vector.dibujar && part.mostrar) {
+
+  // No se mueve, Se dibuja el vector, Se muestra, Se dibuja ejes
+  if (!part.move && part.vector.dibujar && part.mostrar && part.dib_ejes) {
+    dibujar_ctx_particula(part);
+    dibujar_ctx_vector(part);
+    dibujar_ejes(part);
+  }
+
+  // Se mueve, No se dibuja el vector, Se muestra, No se dibuja ejes
+  if (part.move && !part.vector.dibujar && part.mostrar && !part.dib_ejes) {
     part.x += part.vector.velox;
     part.y += part.vector.veloy;
+    dibujar_ctx_particula(part);
+  }
 
+  // Se mueve, No se dibuja el vector, Se muestra, Se dibuja ejes
+  if (part.move && !part.vector.dibujar && part.mostrar && part.dib_ejes) {
+    part.x += part.vector.velox;
+    part.y += part.vector.veloy;
+    dibujar_ctx_particula(part);
+    dibujar_ejes(part);
+  }
+
+  // Se mueve, Se dibuja el vector, Se muestra, No se dibuja ejes
+  if (part.move && part.vector.dibujar && part.mostrar && !part.dib_ejes) {
+    part.x += part.vector.velox;
+    part.y += part.vector.veloy;
     dibujar_ctx_particula(part);
     dibujar_ctx_vector(part);
   }
-  // Se mueve, No vectores, Si se muestra
-  if (part.move && !part.vector.dibujar && part.mostrar) {
+
+  // Se mueve, Se dibuja el vector, Se muestra, Se dibuja ejes
+  if (part.move && part.vector.dibujar && part.mostrar && part.dib_ejes) {
     part.x += part.vector.velox;
     part.y += part.vector.veloy;
-
     dibujar_ctx_particula(part);
+    dibujar_ctx_vector(part);
+    dibujar_ejes(part);
   }
 };
 
@@ -410,6 +443,28 @@ const animar_colision = () => {
     part_2.y += (overlap / 2) * ny;
   }
 };
+
+const dibujar_ejes = (part) => {
+  const tam_x = 200;
+  const tam_y = 200;
+  ctx.beginPath();
+  ctx.setLineDash([5, 5]); // Línea punteada
+
+  ctx.strokeStyle = "black"; // Color negro
+  ctx.lineWidth = 1;
+
+  // Eje horizontal
+  ctx.moveTo(part.x - tam_x / 2, part.y);
+  ctx.lineTo(part.x + tam_x / 2, part.y);
+
+  // Eje vertical
+  ctx.moveTo(part.x, part.y - tam_y / 2);
+  ctx.lineTo(part.x, part.y + tam_y / 2);
+
+  ctx.stroke();
+  ctx.setLineDash([]); // Restablecer línea sólida
+};
+
 const redondeo_cientifico = (num) => {
   return Math.round(parseFloat(num).toFixed(5) * 10000) / 10000;
 };
@@ -522,6 +577,17 @@ const borrarVectores = function () {
   });
 };
 
+const pintarEjes = function () {
+  arr_particulas.forEach((e) => {
+    e.dib_ejes = true;
+  });
+};
+const borrarEjes = function () {
+  arr_particulas.forEach((e) => {
+    e.dib_ejes = false;
+  });
+};
+
 document.addEventListener("click", (e) => {
   if (e.target.matches(".reproduccion") || e.target.matches(".cont-repro")) {
     if (boton_reproduccion.classList.contains("fa-play")) {
@@ -537,14 +603,13 @@ document.addEventListener("click", (e) => {
     !btn_graficas.classList.contains("disabled")
   ) {
     $modal.classList.add("activemodal");
+    moment_v_btn_graph.click();
+    moment_t_btn_graph.click();
   }
 
   if (e.target.matches(".closebottom")) {
     $modal.classList.remove("activemodal");
-    btns_graph.forEach((e) => {
-      e.classList.remove("btn_disabled");
-    });
-    moment_t_btn_graph.classList.add("btn_disabled");
+    moment_t_btn_graph.click();
   }
 
   if (
@@ -907,6 +972,11 @@ $viewVectores.addEventListener("input", () => {
   if ($viewVectores.checked) {
     pintarVectores();
   } else borrarVectores();
+});
+$viewEjes.addEventListener("input", () => {
+  if ($viewEjes.checked) {
+    pintarEjes();
+  } else borrarEjes();
 });
 $rangoBTN.addEventListener("input", () => {
   $rangoVisor.textContent = $rangoBTN.value + "%";
