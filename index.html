@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -33,14 +33,46 @@
 </head>
 
 <body>
+    <div class="head">
+        <img src="assets/img/utb-logotipo.png" alt="Logo" class="logo">
+        <h1>
+            Universidad Tecnológica de Bolívar
+        </h1>
+    </div>
     <div class="principal">
+        <div class="cont-controller">
 
-        <div class="head">
-            <img src="assets/img/utb-logotipo.png" alt="Logo" class="logo">
-            <h1>
-                Universidad Tecnologica de Bolívar
-            </h1>
+            <div class="controller">
+                <label>
+                    <input type="checkbox" id="viewE"> Energía Cinética
+                </label>
+                <label>
+                    <input type="checkbox" id="viewMoment"> Momento Lineal
+                </label>
+                <label>
+                    <input type="checkbox" checked id="viewVectores"> Visualizar Vectores
+                </label>
+                <label>
+                    <input type="checkbox" id="viewEjes"> Mostrar Ejes
+                </label>
+                <label>
+                    Elasticidad: <span class="rangoEvisor">100%</span>
+                    <div>
+                        <input type="range" min="20" max="100" value="100" step="10" id="rangeE">
+                    </div>
+                </label>
+
+                <div class="cont-repro">
+
+                    <i class="fa-solid fa-play reproduccion"></i>
+                </div>
+
+                <div class="vermodalboton disabled">
+                    Visualizar Gráficas
+                </div>
+            </div>
         </div>
+
         <div class="data">
             <span class="momentoSis disablebb">P = 55 Kg·m/s</span><br>
             <span class="energiaSis disablebb">E = 0.5 J</span>
@@ -51,77 +83,49 @@
 
                 </canvas>
             </div>
-            <div class="cont-controller">
+            <table class="tablaValores">
+                <tr>
+                    <td colspan="7" class="tabletitle1">Cuerpo 1</td>
+                    <td colspan="7" class="tabletitle2">Cuerpo 2</td>
+                </tr>
+                <tr class="mediumtitle">
+                    <td>M [kg]</td>
+                    <td>Pos x</td>
+                    <td>Pos y</td>
+                    <td>Velo x [m/s]</td>
+                    <td>Velo y [m/s]</td>
+                    <td>|V| [m/s]</td>
+                    <td>|P| [kg·m/s]</td>
+                    <td>M [kg]</td>
+                    <td>Pos x</td>
+                    <td>Pos y</td>
+                    <td>Velo x [m/s]</td>
+                    <td>Velo y [m/s]</td>
+                    <td>|V| [m/s]</td>
+                    <td>|P| [kg·m/s]</td>
+                </tr>
+                <tr>
+                    <td><input min="0.1" step="0.1" max="1.2" type="number" class="inputVal masa masa-1"></td>
+                    <td><input readonly type="number" class="inputVal posx posx-1"></td>
+                    <td><input readonly type="number" class="inputVal posy posy-1"></td>
+                    <td><input min="-4" step="0.1" max="4" type="number" class="inputVal velox velox-1"></td>
+                    <td><input min="-4" step="0.1" max="4" type="number" class="inputVal veloy veloy-1"></td>
+                    <td><input readonly type="number" class="inputVal velo velo-1"></td>
+                    <td><input readonly type="number" class="inputVal moment moment-1"></td>
 
-                <div class="controller">
-                    <label>
-                        <input type="checkbox" id="viewE"> Energia Cinetica
-                    </label>
-                    <label>
-                        <input type="checkbox" id="viewMoment"> Momento lineal
-                    </label>
-                    <label>
-                        <input type="checkbox" checked id="viewVectores"> Visualizar Vectores
-                    </label>
-                    <label>
-                        Elasticidad: <span class="rangoEvisor">100%</span>
-                        <div>
-                            <input type="range" min="20" max="100" value="100" step="10" id="rangeE">
-                        </div>
-                    </label>
-
-
-
-                    <div class="cont-repro">
-
-                        <i class="fa-solid fa-play reproduccion"></i>
-                    </div>
-
-                    <div class="vermodalboton disabled">
-                        Visualizar Graficas
-                    </div>
-                </div>
-            </div>
+                    <td><input min="0.1" step="0.1" max="1.2" type="number" class="inputVal masa masa-2"></td>
+                    <td><input readonly type="number" class="inputVal posx posx-2"></td>
+                    <td><input readonly type="number" class="inputVal posy posy-2"></td>
+                    <td><input min="-4" step="0.1" max="4" type="number" class="inputVal velox velox-2"></td>
+                    <td><input min="-4" step="0.1" max="4" type="number" class="inputVal veloy veloy-2"></td>
+                    <td><input readonly type="number" class="inputVal velo velo-2"></td>
+                    <td><input readonly type="number" class="inputVal moment moment-2"></td>
+                </tr>
+            </table>
         </div>
-        <table class="tablaValores">
-            <tr>
-                <td colspan="7" class="tabletitle1">Cuerpo 1</td>
-                <td colspan="7" class="tabletitle2">Cuerpo 2</td>
-            </tr>
-            <tr class="mediumtitle">
-                <td>M [kg]</td>
-                <td>Pos x</td>
-                <td>Pos y</td>
-                <td>Velo x [m/s]</td>
-                <td>Velo y [m/s]</td>
-                <td>|V| [m/s]</td>
-                <td>|P| [kgm/s]</td>
-                <td>M [kg]</td>
-                <td>Pos x</td>
-                <td>Pos y</td>
-                <td>Velo x [m/s]</td>
-                <td>Velo y [m/s]</td>
-                <td>|V| [m/s]</td>
-                <td>|P| [kgm/s]</td>
-            </tr>
-            <tr>
-                <td><input min="0.1" step="0.1" max="1.2" type="number" class="inputVal masa masa-1"></td>
-                <td><input readonly type="number" class="inputVal posx posx-1"></td>
-                <td><input readonly type="number" class="inputVal posy posy-1"></td>
-                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal velox velox-1"></td>
-                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal veloy veloy-1"></td>
-                <td><input readonly type="number" class="inputVal velo velo-1"></td>
-                <td><input readonly type="number" class="inputVal moment moment-1"></td>
+        <div class="space"></div>
 
-                <td><input min="0.1" step="0.1" max="1.2" type="number" class="inputVal masa masa-2"></td>
-                <td><input readonly type="number" class="inputVal posx posx-2"></td>
-                <td><input readonly type="number" class="inputVal posy posy-2"></td>
-                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal velox velox-2"></td>
-                <td><input min="-4" step="0.1" max="4" type="number" class="inputVal veloy veloy-2"></td>
-                <td><input readonly type="number" class="inputVal velo velo-2"></td>
-                <td><input readonly type="number" class="inputVal moment moment-2"></td>
-            </tr>
-        </table>
+
 
         <div class="modal">
             <div class="container-canvas">
@@ -134,7 +138,7 @@
                         Momento Lineal vs Velocidad
                     </button>
                     <button class="graph_btn" id="e_vs_v">
-                        Energia vs Velocidad
+                        Energía vs Velocidad
                     </button>
                 </div>
                 <div class="closebottom">
@@ -147,6 +151,5 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="assets/javascript/jsmain.js"></script>
 </body>
-
 
 </html>
